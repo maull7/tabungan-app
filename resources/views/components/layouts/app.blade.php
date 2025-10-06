@@ -20,8 +20,12 @@
                     <p class="text-sm text-slate-500">Kelola tabungan Anda dengan mudah.</p>
                 </div>
                 <nav class="flex items-center gap-3 text-sm text-slate-600">
-                    <a href="{{ route('dashboard') }}" class="rounded-xl px-3 py-2 font-semibold hover:bg-white">Dashboard</a>
-                    <a href="{{ route('transactions.index') }}" class="rounded-xl px-3 py-2 font-semibold hover:bg-white">Transaksi</a>
+                    @php($user = auth()->user())
+                    <a href="{{ route('dashboard') }}" class="rounded-xl px-3 py-2 font-semibold hover:bg-white {{ request()->routeIs('dashboard') ? 'bg-white text-blue-600' : '' }}">Dashboard</a>
+                    <a href="{{ route('transactions.index') }}" class="rounded-xl px-3 py-2 font-semibold hover:bg-white {{ request()->routeIs('transactions.*') ? 'bg-white text-blue-600' : '' }}">Transaksi</a>
+                    @if ($user?->is_admin)
+                        <a href="{{ route('admin.dashboard') }}" class="rounded-xl px-3 py-2 font-semibold hover:bg-white {{ request()->routeIs('admin.*') ? 'bg-white text-blue-600' : '' }}">Admin</a>
+                    @endif
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
                         <x-button type="submit" variant="secondary">Keluar</x-button>

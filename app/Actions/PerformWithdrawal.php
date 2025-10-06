@@ -35,6 +35,7 @@ class PerformWithdrawal
                 'running_balance' => $newBalance,
                 'receipt_number' => $this->generateReceiptNumber(),
                 'note' => $note,
+                'payment_status' => Transaction::STATUS_COMPLETED,
             ]);
 
             $account->update(['balance' => $newBalance]);

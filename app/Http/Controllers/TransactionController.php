@@ -9,12 +9,14 @@ use App\Actions\PerformWithdrawal;
 use App\Http\Requests\StoreDepositRequest;
 use App\Http\Requests\StoreWithdrawalRequest;
 use App\Models\Transaction;
+use App\Services\MidtransService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
+use Throwable;
 
 class TransactionController extends Controller
 {
@@ -23,6 +25,7 @@ class TransactionController extends Controller
         protected PerformWithdrawal $performWithdrawal,
         protected GenerateReceiptPdf $generateReceiptPdf,
         protected CreateSavingsAccountForUser $createSavingsAccountForUser,
+        protected MidtransService $midtransService,
     ) {
     }
 
@@ -74,11 +77,46 @@ class TransactionController extends Controller
         $user = $request->user();
         $amount = (float) $request->input('amount');
 
-        $transaction = $this->performDeposit->handle($user, $amount, $request->input('note'));
+        $paymentStatus = $this->midtransService->isEnabled()
+            ? Transaction::STATUS_PENDING
+            : Transaction::STATUS_COMPLETED;
+
+        $transaction = $this->performDeposit->handle(
+            $user,
+            $amount,
+            $request->input('note'),
+            $paymentStatus,
+        );
+
+        if ($paymentStatus === Transaction::STATUS_PENDING) {
+            try {
+                $payment = $this->midtransService->createSnapTransaction($transaction);
+
+                $transaction->forceFill([
+                    'payment_provider' => 'midtrans',
+                    'payment_reference' => $payment['order_id'] ?? null,
+                    'payment_token' => $payment['token'] ?? null,
+                    'payment_url' => $payment['redirect_url'] ?? null,
+                ])->save();
+            } catch (Throwable $exception) {
+                $transaction->forceFill([
+                    'payment_status' => Transaction::STATUS_FAILED,
+                ])->save();
+
+                return redirect()
+                    ->route('transactions.show', $transaction)
+                    ->withErrors([
+                        'midtrans' => 'Gagal membuat permintaan pembayaran Midtrans: '.$exception->getMessage(),
+                    ]);
+            }
+        }
 
         return redirect()
             ->route('transactions.show', $transaction)
-            ->with('status', 'Setoran berhasil disimpan.');
+            ->with('status', $paymentStatus === Transaction::STATUS_PENDING
+                ? 'Setoran berhasil dibuat. Silakan selesaikan pembayaran melalui Midtrans.'
+                : 'Setoran berhasil disimpan.'
+            );
     }
 
     public function storeWithdrawal(StoreWithdrawalRequest $request): RedirectResponse

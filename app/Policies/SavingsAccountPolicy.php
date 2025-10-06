@@ -9,7 +9,7 @@ class SavingsAccountPolicy
 {
     public function view(User $user, SavingsAccount $account): bool
     {
-        return $account->user_id === $user->id;
+        return $user->is_admin || $account->user_id === $user->id;
     }
 
     public function update(User $user, SavingsAccount $account): bool

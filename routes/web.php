@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\TransactionApprovalController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MidtransWebhookController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,10 +16,18 @@ Route::middleware('guest')->controller(AuthController::class)->group(function ()
     Route::post('/register', 'register');
 });
 
+Route::post('/midtrans/notifications', MidtransWebhookController::class)->name('midtrans.notifications');
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/', DashboardController::class)->name('dashboard');
+
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+        Route::post('/transactions/{transaction}/approve', [TransactionApprovalController::class, 'store'])->name('transactions.approve');
+    });
 
     Route::prefix('transactions')->name('transactions.')->controller(TransactionController::class)->group(function () {
         Route::get('/', 'index')->name('index');
