@@ -24,6 +24,27 @@
                     {{ $transaction->created_at->timezone('Asia/Jakarta')->translatedFormat('d F Y, H:i') }} WIB
                 </dd>
             </div>
+            @if ($transaction->type === 'deposit')
+                <div>
+                    <dt class="text-sm font-medium text-slate-500">Status Pembayaran</dt>
+                    <dd class="mt-1 text-lg font-semibold">
+                        @if ($transaction->payment_status === \App\Models\Transaction::STATUS_COMPLETED)
+                            <span class="text-emerald-600">Lunas</span>
+                        @elseif ($transaction->payment_status === \App\Models\Transaction::STATUS_PENDING)
+                            <span class="text-amber-600">Menunggu Pembayaran</span>
+                            <p class="mt-1 text-sm font-normal text-amber-600">Saldo akan bertambah setelah pembayaran dikonfirmasi.</p>
+                        @else
+                            <span class="text-rose-600">Gagal</span>
+                        @endif
+                    </dd>
+                </div>
+                @if ($transaction->payment_reference)
+                    <div>
+                        <dt class="text-sm font-medium text-slate-500">Referensi Pembayaran</dt>
+                        <dd class="mt-1 text-lg font-semibold text-slate-900">{{ $transaction->payment_reference }}</dd>
+                    </div>
+                @endif
+            @endif
             <div>
                 <dt class="text-sm font-medium text-slate-500">Nominal</dt>
                 <dd class="mt-1 text-lg font-semibold {{ $transaction->type === 'deposit' ? 'text-green-600' : 'text-red-600' }}">
@@ -45,6 +66,16 @@
                 <dd class="mt-1 text-lg font-semibold text-slate-900">{{ $transaction->savingsAccount->account_number }}</dd>
             </div>
         </dl>
+
+        @if ($transaction->type === 'deposit' && $transaction->payment_status === \App\Models\Transaction::STATUS_PENDING && $transaction->payment_url)
+            <div class="mt-6 flex items-center justify-between rounded-xl bg-amber-50 px-4 py-3 text-amber-700">
+                <div>
+                    <p class="font-semibold">Pembayaran Midtrans belum selesai.</p>
+                    <p class="text-sm">Klik tombol di samping untuk melanjutkan proses pembayaran.</p>
+                </div>
+                <a href="{{ $transaction->payment_url }}" target="_blank" class="rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-700">Bayar Sekarang</a>
+            </div>
+        @endif
 
         @if ($transaction->note)
             <div class="mt-6 rounded-xl bg-slate-50 p-4">

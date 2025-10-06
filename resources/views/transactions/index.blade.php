@@ -51,6 +51,7 @@
                         <tr>
                             <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">Tanggal</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">Tipe</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">Status</th>
                             <th class="px-4 py-3 text-right text-sm font-semibold text-slate-600">Nominal</th>
                             <th class="px-4 py-3 text-right text-sm font-semibold text-slate-600">Saldo Berjalan</th>
                             <th class="px-4 py-3 text-right text-sm font-semibold text-slate-600">Aksi</th>
@@ -64,6 +65,19 @@
                                     <x-badge :variant="$transaction->type === 'deposit' ? 'success' : 'warning'">
                                         {{ $transaction->type === 'deposit' ? 'Setoran' : 'Penarikan' }}
                                     </x-badge>
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    @if ($transaction->type === 'deposit')
+                                        @if ($transaction->payment_status === \App\Models\Transaction::STATUS_COMPLETED)
+                                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Lunas</span>
+                                        @elseif ($transaction->payment_status === \App\Models\Transaction::STATUS_PENDING)
+                                            <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Menunggu</span>
+                                        @else
+                                            <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">Gagal</span>
+                                        @endif
+                                    @else
+                                        <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Selesai</span>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm font-semibold {{ $transaction->type === 'deposit' ? 'text-green-600' : 'text-red-600' }}">
                                     {{ ($transaction->type === 'deposit' ? '+' : '-') }}{{ 'Rp '.number_format($transaction->amount, 2, ',', '.') }}

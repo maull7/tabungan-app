@@ -13,9 +13,14 @@ class PerformDeposit
         protected CreateSavingsAccountForUser $createSavingsAccountForUser
     ) {}
 
-    public function handle(User $user, float $amount, ?string $note = null): Transaction
+    public function handle(
+        User $user,
+        float $amount,
+        ?string $note = null,
+        string $paymentStatus = Transaction::STATUS_COMPLETED
+    ): Transaction
     {
-        return DB::transaction(function () use ($user, $amount, $note) {
+        return DB::transaction(function () use ($user, $amount, $note, $paymentStatus) {
             $this->createSavingsAccountForUser->handle($user);
 
             $account = $user->savingsAccount()->lockForUpdate()->first();
@@ -29,10 +34,13 @@ class PerformDeposit
                 'running_balance' => $newBalance,
                 'receipt_number' => $this->generateReceiptNumber(),
                 'note' => $note,
+                'payment_status' => $paymentStatus,
             ]);
 
-            // Update saldo di akhir agar konsisten
-            $account->update(['balance' => $newBalance]);
+            if ($paymentStatus === Transaction::STATUS_COMPLETED) {
+                // Update saldo di akhir agar konsisten
+                $account->update(['balance' => $newBalance]);
+            }
 
             return $transaction;
         });

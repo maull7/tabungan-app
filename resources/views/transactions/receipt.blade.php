@@ -72,6 +72,26 @@
             <dt>Jenis Transaksi</dt>
             <dd>{{ $transaction->type === 'deposit' ? 'Setoran' : 'Penarikan' }}</dd>
         </div>
+        @if ($transaction->type === 'deposit')
+            <div>
+                <dt>Status Pembayaran</dt>
+                <dd>
+                    @if ($transaction->payment_status === \App\Models\Transaction::STATUS_COMPLETED)
+                        Lunas
+                    @elseif ($transaction->payment_status === \App\Models\Transaction::STATUS_PENDING)
+                        Menunggu Pembayaran
+                    @else
+                        Gagal
+                    @endif
+                </dd>
+            </div>
+            @if ($transaction->payment_reference)
+                <div>
+                    <dt>Referensi Pembayaran</dt>
+                    <dd>{{ $transaction->payment_reference }}</dd>
+                </div>
+            @endif
+        @endif
     </dl>
 
     @if ($transaction->note)

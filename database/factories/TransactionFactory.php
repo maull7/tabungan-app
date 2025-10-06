@@ -32,6 +32,11 @@ class TransactionFactory extends Factory
                 : $amount,
             'receipt_number' => 'TX-'.$this->faker->date('Ymd').'-'.Str::upper(Str::random(6)),
             'note' => $this->faker->sentence(),
+            'payment_status' => Transaction::STATUS_COMPLETED,
+            'payment_provider' => null,
+            'payment_reference' => null,
+            'payment_token' => null,
+            'payment_url' => null,
         ];
     }
 }
