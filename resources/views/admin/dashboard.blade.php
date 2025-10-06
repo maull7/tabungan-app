@@ -25,9 +25,22 @@
                     <p class="text-sm text-slate-500">Pantau status pembayaran dan cetak struk langsung.</p>
                 </div>
                 <div class="flex items-center gap-2 text-sm">
-                    <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold {{ $midtransEnabled ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
-                        <span class="inline-block h-2 w-2 rounded-full {{ $midtransEnabled ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
-                        Midtrans {{ $midtransEnabled ? 'aktif' : 'belum dikonfigurasi' }}
+                    @php
+                        $midtransBadgeClass = match (true) {
+                            $midtransSimulation => 'bg-sky-100 text-sky-700',
+                            $midtransEnabled => 'bg-emerald-100 text-emerald-700',
+                            default => 'bg-amber-100 text-amber-700',
+                        };
+                        $midtransDotClass = match (true) {
+                            $midtransSimulation => 'bg-sky-500',
+                            $midtransEnabled => 'bg-emerald-500',
+                            default => 'bg-amber-500',
+                        };
+                        $midtransLabel = $midtransSimulation ? 'mode simulasi' : ($midtransEnabled ? 'aktif' : 'belum dikonfigurasi');
+                    @endphp
+                    <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold {{ $midtransBadgeClass }}">
+                        <span class="inline-block h-2 w-2 rounded-full {{ $midtransDotClass }}"></span>
+                        Midtrans {{ $midtransLabel }}
                     </span>
                     <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
                         Pending: Rp {{ number_format($pendingDeposits, 2, ',', '.') }}

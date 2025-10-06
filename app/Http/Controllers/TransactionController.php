@@ -142,6 +142,7 @@ class TransactionController extends Controller
         return view('transactions.show', [
             'transaction' => $transaction,
             'account' => $transaction->savingsAccount,
+            'midtransSimulation' => $this->midtransService->isSimulation(),
         ]);
     }
 

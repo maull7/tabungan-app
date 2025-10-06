@@ -71,9 +71,17 @@
             <div class="mt-6 flex items-center justify-between rounded-xl bg-amber-50 px-4 py-3 text-amber-700">
                 <div>
                     <p class="font-semibold">Pembayaran Midtrans belum selesai.</p>
-                    <p class="text-sm">Klik tombol di samping untuk melanjutkan proses pembayaran.</p>
+                    <p class="text-sm">
+                        @if ($midtransSimulation ?? false)
+                            Gunakan simulator untuk menandai pembayaran berhasil atau gagal.
+                        @else
+                            Klik tombol di samping untuk melanjutkan proses pembayaran.
+                        @endif
+                    </p>
                 </div>
-                <a href="{{ $transaction->payment_url }}" target="_blank" class="rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-700">Bayar Sekarang</a>
+                <a href="{{ $transaction->payment_url }}" target="_blank" class="rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-700">
+                    {{ ($midtransSimulation ?? false) ? 'Buka Simulator' : 'Bayar Sekarang' }}
+                </a>
             </div>
         @endif
 
