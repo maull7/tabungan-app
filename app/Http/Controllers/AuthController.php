@@ -15,7 +15,6 @@ class AuthController extends Controller
 {
     public function __construct(protected CreateSavingsAccountForUser $createSavingsAccountForUser)
     {
-        $this->middleware('guest')->only(['showLogin', 'showRegister']);
     }
 
     public function showLogin(): View
