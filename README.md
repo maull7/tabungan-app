@@ -1,61 +1,92 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Tabungan App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi tabungan sederhana berbasis Laravel 12 dengan fokus pada kemudahan pengelolaan setoran dan penarikan untuk satu rekening tabungan per pengguna. Seluruh antarmuka menggunakan TailwindCSS berbasis komponen Blade dan mendukung pencetakan struk transaksi.
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Registrasi & login pengguna dengan pembuatan rekening otomatis pada login pertama.
+- Satu rekening tabungan per pengguna dengan nomor rekening unik.
+- Transaksi setoran dan penarikan dengan validasi saldo dan nominal minimal Rp1.000.
+- Riwayat transaksi lengkap dengan filter tipe dan rentang tanggal.
+- Dashboard saldo, ringkasan transaksi bulanan, dan daftar transaksi terbaru.
+- Halaman detail transaksi dan struk siap cetak (PDF/HTML fallback) lengkap dengan QR visual.
+- Kebijakan akses berbasis policy: pengguna hanya dapat melihat data miliknya.
+- Seeder demo dengan dua akun pengguna dan transaksi contoh.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Kebutuhan Sistem
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2 atau lebih baru dengan ekstensi `bcmath` dan `intl`.
+- SQLite (default) atau MySQL untuk basis data.
+- Composer untuk manajemen dependensi PHP.
+- Node.js (opsional bila ingin menyalin aset statis sendiri, meskipun proyek ini menggunakan CDN Tailwind untuk kemudahan demo).
 
-## Learning Laravel
+## Instalasi & Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. **Clone repositori** dan masuk ke direktori proyek.
+2. **Pasang dependensi PHP** dan paket tambahan:
+   ```bash
+   composer install
+   composer require barryvdh/laravel-dompdf simplesoftwareio/simple-qrcode pestphp/pest --dev pestphp/pest-plugin-laravel --dev
+   ```
+   > Catatan: pada lingkungan tanpa akses ke GitHub, siapkan token OAuth GitHub agar proses install berhasil.
+3. **Salin berkas environment** dan buat key aplikasi:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+4. **Konfigurasi basis data** di `.env`. Secara default, aplikasi menggunakan SQLite. Untuk SQLite, cukup buat file kosong:
+   ```bash
+   touch database/database.sqlite
+   ```
+5. **Jalankan migrasi dan seeder demo**:
+   ```bash
+   php artisan migrate --seed
+   ```
+6. **(Opsional) Build aset front-end** bila ingin menghapus ketergantungan CDN:
+   ```bash
+   npm install
+   npm run build
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Menjalankan Aplikasi
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+php artisan serve
+```
 
-## Laravel Sponsors
+Akses aplikasi melalui `http://localhost:8000`. Gunakan kredensial demo dari seeder:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Email: `demo@tabungan.test` — Password: `password`
+- Email: `demo2@tabungan.test` — Password: `password`
 
-### Premium Partners
+## Pengujian
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Proyek ini menggunakan Pest. Setelah memasang dependensi dev, jalankan:
 
-## Contributing
+```bash
+php artisan test
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Pengujian mencakup skenario utama: pembuatan rekening otomatis, setoran & penarikan, pembatasan akses data, serta endpoint struk.
 
-## Code of Conduct
+## Asumsi & Catatan
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- TailwindCSS dimuat via CDN untuk menyederhanakan setup demo. Gunakan Vite bila membutuhkan optimasi produksi.
+- Struk transaksi menggunakan DomPDF. Jika DomPDF belum terpasang, aksi pencetakan akan merender halaman HTML sebagai fallback.
+- QR code pada struk merupakan representasi visual berbasis hash nomor struk. Pasang `simple-qrcode` bila ingin menggunakan QR code standar.
+- Rate limit sederhana (`throttle:5,1`) diterapkan pada endpoint transaksi untuk mencegah spam.
+- Zona waktu aplikasi disetel ke `Asia/Jakarta` dan bahasa default `id`.
 
-## Security Vulnerabilities
+## Struktur Penting
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- `app/Actions`: logika bisnis terpisah untuk pembuatan rekening dan transaksi.
+- `app/Http/Controllers`: controller untuk dashboard, transaksi, dan autentikasi.
+- `app/Http/Requests`: validasi form setoran dan penarikan.
+- `app/Policies`: policy akses rekening dan transaksi.
+- `resources/views/components`: komponen Blade untuk card, button, badge, input uang, tabel, modal, dan layout.
+- `resources/views/transactions/receipt.blade.php`: template struk PDF/HTML.
+- `tests/`: pengujian fitur menggunakan Pest (tambahkan setelah memasang dependensi dev).
 
-## License
+## Lisensi
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Proyek ini berlisensi MIT mengikuti lisensi standar Laravel.
