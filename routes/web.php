@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\TransactionApprovalController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MidtransSimulationController;
 use App\Http\Controllers\MidtransWebhookController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/', DashboardController::class)->name('dashboard');
+
+    Route::prefix('midtrans/simulations')->name('midtrans.simulations.')->controller(MidtransSimulationController::class)->group(function () {
+        Route::get('/transactions/{transaction}', 'show')->name('show');
+        Route::post('/transactions/{transaction}', 'store')->name('store');
+    });
 
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');

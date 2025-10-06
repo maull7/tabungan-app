@@ -54,6 +54,7 @@ class AdminDashboardController extends Controller
             'netOmset' => $netOmset,
             'latestTransactions' => $latestTransactions,
             'midtransEnabled' => $this->midtransService->isEnabled(),
+            'midtransSimulation' => $this->midtransService->isSimulation(),
             'topAccounts' => $topAccounts,
         ]);
     }
