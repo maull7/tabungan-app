@@ -24,7 +24,6 @@ class TransactionController extends Controller
         protected GenerateReceiptPdf $generateReceiptPdf,
         protected CreateSavingsAccountForUser $createSavingsAccountForUser,
     ) {
-        $this->middleware('auth');
     }
 
     public function index(Request $request): View

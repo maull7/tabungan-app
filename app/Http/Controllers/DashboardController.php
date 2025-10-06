@@ -11,7 +11,6 @@ class DashboardController extends Controller
     public function __construct(
         protected CreateSavingsAccountForUser $createSavingsAccountForUser
     ) {
-        $this->middleware('auth');
     }
 
     public function __invoke(Request $request): View
