@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id" class="h-full bg-slate-100">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,13 +9,16 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
+
 <body class="flex min-h-full items-center justify-center p-6">
     <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl">
         <div class="mb-6 text-center">
-            <h1 class="text-2xl font-bold text-slate-900">{{ config('app.name', 'Tabungan') }}</h1>
+            <h1 class="text-2xl font-bold text-slate-900">TanaBan</h1>
             <p class="text-sm text-slate-500">Masuk untuk mengelola tabungan Anda.</p>
         </div>
 
@@ -37,4 +41,5 @@
         {{ $slot }}
     </div>
 </body>
+
 </html>

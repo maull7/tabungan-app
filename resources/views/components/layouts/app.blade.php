@@ -20,7 +20,7 @@
         <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10">
             <header class="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900">TANABAN</h1>
+                    <h1 class="text-2xl font-bold text-slate-900">TanaBan</h1>
                     <p class="text-sm text-slate-500">Kelola tabungan Anda dengan mudah.</p>
                 </div>
                 <nav class="flex items-center gap-3 text-sm text-slate-600">
@@ -74,7 +74,7 @@
                         return '';
                     }
                     const numeric = value.replace(/[^0-9.,]/g, '').replace(/\./g, '').replace(/,/g,
-                    '.');
+                        '.');
                     const number = Number(numeric);
                     if (Number.isNaN(number)) return '';
                     hidden.value = number.toFixed(2);
